@@ -55,7 +55,8 @@ public class RemoveDuplicateIntentService extends IntentService {
             if (intent != null) {
                 final String action = intent.getAction();
                 if (REMOVE_DUPLICATE_ACTION.equals(action)) {
-                    Context context = createPackageContext(intent.getStringExtra(PACKAGE_KEY), Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                    Context context = createPackageContext(intent.getStringExtra(PACKAGE_KEY),
+                            Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
                     ClassLoader cl = context.getClassLoader();
 
                     Bundle bundle = intent.getBundleExtra(PARAMS_KEY);
