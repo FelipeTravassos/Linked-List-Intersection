@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -51,16 +50,21 @@ public class RemoveDuplicateIntentService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         try {
-            Context context = createPackageContext(intent.getStringExtra(PACKAGE_KEY), Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-            ClassLoader cl = context.getClassLoader();
+            if (intent != null) {
+                final String action = intent.getAction();
+                if (REMOVE_DUPLICATE_ACTION.equals(action)) {
+                    Context context = createPackageContext(intent.getStringExtra(PACKAGE_KEY), Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                    ClassLoader cl = context.getClassLoader();
 
-            Bundle bundle = intent.getBundleExtra(PARAMS_KEY);
-            bundle.setClassLoader(cl);
-            ResultReceiver receiver = bundle.getParcelable(RESULT_RECEIVER_KEY);
-            ArrayList<String> list = (ArrayList<String>) bundle.getSerializable(LINKED_LIST_KEY);
+                    Bundle bundle = intent.getBundleExtra(PARAMS_KEY);
+                    bundle.setClassLoader(cl);
+                    ResultReceiver receiver = bundle.getParcelable(RESULT_RECEIVER_KEY);
+                    ArrayList<String> list = (ArrayList<String>) bundle.getSerializable(LINKED_LIST_KEY);
 
-            if (list != null && receiver != null) {
-                removeDuplicates(new LinkedList<>(list), Objects.requireNonNull(receiver));
+                    if (list != null && receiver != null) {
+                        removeDuplicates(new LinkedList<>(list), Objects.requireNonNull(receiver));
+                    }
+                }
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -74,7 +78,12 @@ public class RemoveDuplicateIntentService extends IntentService {
      * @param receiver Listener to send result
      */
     private void removeDuplicates(LinkedList<String> list, ResultReceiver receiver) {
-        list = new LinkedList<>(new HashSet<>(list));
+        for (int j, i = 0; i < list.size(); i++) {
+            String item = list.get(i);
+            for (j = i+1;j < list.size(); j++) {
+                if (item.equals(list.get(j))) list.remove(j--);
+            }
+        }
 
         Bundle bundle = new Bundle();
         bundle.putSerializable(LINKED_LIST_KEY, list);
