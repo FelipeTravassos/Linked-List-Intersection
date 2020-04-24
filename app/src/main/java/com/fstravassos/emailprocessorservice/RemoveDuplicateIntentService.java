@@ -32,6 +32,8 @@ public class RemoveDuplicateIntentService extends IntentService {
     public static final String PACKAGE_KEY = "PACKAGE";
     public static final String REMOVE_DUPLICATE_ACTION = "REMOVE_DUPLICATE";
 
+    private static LinkedList<String> mLastList = new LinkedList<>();
+
     public RemoveDuplicateIntentService() {
         super("RemoveDuplicateIntentService");
     }
@@ -78,15 +80,23 @@ public class RemoveDuplicateIntentService extends IntentService {
      * @param receiver Listener to send result
      */
     private void removeDuplicates(LinkedList<String> list, ResultReceiver receiver) {
+        LinkedList<String> aux = new LinkedList<>();
         for (int j, i = 0; i < list.size(); i++) {
             String item = list.get(i);
-            for (j = i+1;j < list.size(); j++) {
-                if (item.equals(list.get(j))) list.remove(j--);
+            if (mLastList.size() > 0 && item.equals(mLastList.get(0))) {
+                aux.addAll(mLastList);
+                break;
+            } else {
+                for (j = i + 1; j < list.size(); j++) {
+                    if (item.equals(list.get(j))) list.remove(j--);
+                }
+                aux.add(item);
             }
         }
 
+        mLastList = aux;
         Bundle bundle = new Bundle();
-        bundle.putSerializable(LINKED_LIST_KEY, list);
+        bundle.putSerializable(LINKED_LIST_KEY, aux);
         receiver.send(RECEIVER_RESULT_SUCCESS, bundle);
     }
 
