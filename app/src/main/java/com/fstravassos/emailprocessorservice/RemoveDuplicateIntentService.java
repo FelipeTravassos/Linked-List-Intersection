@@ -85,7 +85,6 @@ public class RemoveDuplicateIntentService extends IntentService {
         Bundle bundle = new Bundle();
         bundle.putSerializable(LINKED_LIST_KEY, list);
         receiver.send(RECEIVER_RESULT_SUCCESS, bundle);
-        onDestroy();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
