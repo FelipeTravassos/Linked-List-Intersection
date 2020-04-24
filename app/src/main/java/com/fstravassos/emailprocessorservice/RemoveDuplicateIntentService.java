@@ -49,7 +49,7 @@ public class RemoveDuplicateIntentService extends IntentService {
     }
 
     @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+    protected void onHandleIntent(@Nullable Intent intent) {
         try {
             Context context = createPackageContext(intent.getStringExtra(PACKAGE_KEY), Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
             ClassLoader cl = context.getClassLoader();
@@ -65,12 +65,6 @@ public class RemoveDuplicateIntentService extends IntentService {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
     }
 
     /**
